@@ -5,15 +5,23 @@ import joblib
 import numpy as np
 import uvicorn
 from abc import ABC, abstractmethod
+import os
 
 app = FastAPI(title="Fraud Detection API")
 
+# Dynamically resolve paths so it works on both Windows (local) and Linux (cloud)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(current_dir, "..", "models", "xgb_model.json")
+explainer_path = os.path.join(current_dir, "..", "models", "shap_explainer.pkl")
+
 # Load artifacts
 model = xgb.XGBClassifier()
-model.load_model(r'E:\FraudDetectionProject\src\models\xgb_model.json')
-explainer = joblib.load(r'E:\FraudDetectionProject\src\models\shap_explainer.pkl')
+model.load_model(model_path)
+explainer = joblib.load(explainer_path)
 MODEL_VERSION = "xgb-v1.0"
 OPTIMAL_THRESHOLD = 0.0226
+
+# ... (keep the rest of your RulesEngine and API Endpoints code exactly the same)
 
 # --- Strategy Pattern: Rules Engine ---
 class FraudRule(ABC):
